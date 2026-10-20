@@ -4,8 +4,10 @@ Two developers, module ownership, working in parallel. **Dev A = Trading core & 
 **Dev B = Platform, UI & deployment**. Each module has one owner. The other developer reviews but does not edit it
 without asking. Shared contracts (`packages/contracts`, `docs/ARCHITECTURE.md` §3–5) are co-owned.
 
-Status keys: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked. Update the status in the same PR as the work.
-Branch name: `<a|b>/<task-id>-short-name`, e.g. `a/M2.3-ema-strategy`.
+**Live status is on the GitHub project board: https://github.com/users/rithin/projects/1.** Each module is a parent
+issue and each task is a sub-issue (labels `dev-a` / `dev-b` / `pair`, milestones = sync points). Task ID → issue
+number mapping: `docs/team/issue_map.json`. This file is the plan. The status columns below are not updated.
+Branch name: `<a|b>/<task-id>-short-name`, e.g. `a/M2.3-ema-strategy`. PR body must contain `Closes #<issue>`.
 
 ---
 
