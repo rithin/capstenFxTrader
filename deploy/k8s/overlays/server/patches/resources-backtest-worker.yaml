@@ -1,0 +1,14 @@
+# Larger requests/limits on the server.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backtest-worker
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: backtest-worker
+          resources:
+            requests: {cpu: "1", memory: 1Gi}
+            limits: {memory: 4Gi}

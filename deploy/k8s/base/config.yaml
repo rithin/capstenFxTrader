@@ -1,0 +1,19 @@
+# Non-secret settings shared by all app services. Secrets come from `capsten-secrets` (generated per overlay).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: capsten-config
+data:
+  ENVIRONMENT: base
+  LOG_LEVEL: INFO
+  LOG_FORMAT: json
+  REDIS_URL: redis://redis:6379/0
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: capsten
+  S3_ENDPOINT: http://seaweedfs:8333
+  S3_BUCKET_BACKTESTS: backtests
+  S3_BUCKET_BACKUPS: backups
+  TRADING_MODE: sandbox          # sandbox | paper | live. Never default to live.
+  HEALTH_STREAM: events.health
+  HEARTBEAT_SECONDS: "5"

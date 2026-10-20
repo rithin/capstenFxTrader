@@ -1,0 +1,21 @@
+# Replace capsten.example.com with the real domain. TLS via cert-manager (installed on the server, M11.4).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: capsten
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+    - hosts: [capsten.example.com]
+      secretName: capsten-tls
+  rules:
+    - host: capsten.example.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend: {service: {name: api, port: {name: http}}}
+          - path: /
+            pathType: Prefix
+            backend: {service: {name: web, port: {name: http}}}

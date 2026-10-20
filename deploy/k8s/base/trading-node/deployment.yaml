@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trading-node
+  labels: {app.kubernetes.io/name: trading-node}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}   # never two live nodes on one account
+  selector:
+    matchLabels: {app.kubernetes.io/name: trading-node}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: trading-node}
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: trading-node
+          image: capsten/trading-node
+          ports: [{name: health, containerPort: 8080}]
+          envFrom:
+            - configMapRef: {name: capsten-config}
+            - secretRef: {name: capsten-secrets}
+          env:
+            - {name: SERVICE_NAME, value: trading-node}
+          readinessProbe:
+            httpGet: {path: /healthz, port: health}
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /healthz, port: health}
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          resources:
+            requests: {cpu: 50m, memory: 256Mi}
+            limits: {memory: 1Gi}
+          securityContext: {runAsNonRoot: true, allowPrivilegeEscalation: false}

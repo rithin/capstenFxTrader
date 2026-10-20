@@ -1,0 +1,33 @@
+# Server overlay for native k3s (M11.4). Render with `make render-server`; deploy target arrives in M11.5.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: capsten
+resources:
+  - namespace.yaml
+  - ../../base
+
+# Images are built and pushed by CI (M11.6). Bump the tag per release.
+images:
+  - {name: capsten/api, newName: ghcr.io/rithin/capsten-api, newTag: "0.1.0"}
+  - {name: capsten/web, newName: ghcr.io/rithin/capsten-web, newTag: "0.1.0"}
+  - {name: capsten/trading-node, newName: ghcr.io/rithin/capsten-trading-node, newTag: "0.1.0"}
+  - {name: capsten/recorder, newName: ghcr.io/rithin/capsten-recorder, newTag: "0.1.0"}
+  - {name: capsten/backtest-worker, newName: ghcr.io/rithin/capsten-backtest-worker, newTag: "0.1.0"}
+
+configMapGenerator:
+  - name: capsten-config
+    behavior: merge
+    literals:
+      - ENVIRONMENT=server
+      - TRADING_MODE=paper     # switching to live is a deliberate, reviewed change
+
+# Secrets are NOT generated here. `capsten-secrets` and `capsten-s3-config` are created in the cluster
+# out of band (sealed-secrets or SOPS; decision in M11.4). Nothing secret is committed.
+
+patches:
+  - path: patches/ingress.yaml
+  - path: patches/resources-backtest-worker.yaml
+  - path: patches/resources-postgres.yaml
+  - path: patches/resources-trading-node.yaml
+  - path: patches/storage-postgres.yaml
+  - path: patches/storage-seaweedfs.yaml

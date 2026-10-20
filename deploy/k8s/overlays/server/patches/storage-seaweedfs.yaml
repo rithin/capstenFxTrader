@@ -1,0 +1,11 @@
+# Bigger volumes on the server (k3s local-path storage by default; change storageClassName if you add one).
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: seaweedfs
+spec:
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources: {requests: {storage: 50Gi}}

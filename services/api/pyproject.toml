@@ -1,0 +1,28 @@
+[project]
+name = "capsten-api"
+version = "0.1.0"
+description = "Capsten API gateway (FastAPI). Stub for M11; real endpoints in M7."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi==0.151.0",
+    "uvicorn[standard]==0.54.0",
+    "redis==8.1.0",
+    "psycopg[binary]==3.3.6",
+    "sqlalchemy==2.1.5",
+    "alembic==1.20.0",
+    "pydantic-settings==2.16.0",
+]
+
+[dependency-groups]
+dev = ["pytest", "httpx", "ruff"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
