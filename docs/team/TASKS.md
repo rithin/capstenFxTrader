@@ -40,6 +40,8 @@ Do this first and together. Everything else depends on it.
 | M1.4 | **Command handler**: consumes `commands.node` and drives Nautilus `Controller` (start/stop strategy, params) + acks | M1.3 | [ ] |
 | M1.5 | State persistence via Nautilus Redis cache; verify restart → reconciliation with broker | M1.2 | [ ] |
 | M1.6 | Sandbox/demo mode that runs against simulated venue for local dev without broker creds | M1.1 | [ ] |
+| M1.7 | Market data bridge: closed bars + throttled quotes → `market.bars` / `market.quotes` (UI chart) | M1.3 | [ ] |
+| M1.8 | `NodeStatus` snapshots: strategy state + reason, per-strategy P&L, risk utilisation, account KPIs | M1.3, M4.2 | [ ] |
 
 ### M2 · Strategies (`services/trading-node/capsten/strategies`)
 | ID | Task | Depends | Status |
@@ -91,6 +93,7 @@ Do this first and together. Everything else depends on it.
 | M7.5 | Command endpoints → `commands.node` + audit log + wait for ack | M0.3 | [ ] |
 | M7.6 | Backtest endpoints: enqueue, list, detail, tearsheet presigned URL | M0.3 | [ ] |
 | M7.7 | Broker & strategy config CRUD (secret *references* only) | M7.2 | [ ] |
+| M7.8 | Market data & status endpoints: bar history, `bars:*`/`quotes:*`/`status` WS channels, dashboard summary | M1.7, M7.4 | [ ] |
 
 ### M8 · Recorder + database (`services/recorder`, `services/api/migrations`)
 | ID | Task | Depends | Status |
@@ -109,6 +112,8 @@ Do this first and together. Everything else depends on it.
 | M9.6 | **Brokers & accounts**: connections, status, add/edit (secret refs) | M7.7 | [ ] |
 | M9.7 | **Alerts + kill switch**: always-visible kill switch, alert/risk event feed | M7.5 | [ ] |
 | M9.8 | Playwright smoke tests for the main pages | M9.2 | [ ] |
+| M9.9 | **Design system**: theme tokens + shared components from the approved design (ARCHITECTURE.md §7) | M0.2 | [ ] |
+| M9.10 | Price chart (lightweight-charts) with entry/SL/TP overlays, timeframes, live updates | M7.8, M9.9 | [ ] |
 
 ### M10 · Alerts & observability
 | ID | Task | Depends | Status |

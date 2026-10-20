@@ -52,21 +52,27 @@ Rules:
 | `commands.node` | api | trading-node | `Command` |
 | `jobs.backtest` | api | backtest-worker | `BacktestJob` |
 | `events.backtest` | backtest-worker | api, recorder | `BacktestStatus` |
+| `market.bars` | trading-node | api(ws, chart history) | `MarketBar` (closed bars; last 2,000 per instrument/timeframe) |
+| `market.quotes` | trading-node | api(ws) | `QuoteSnapshot` (throttled ≤ 4/s per instrument) |
+| `status.node` | trading-node | api(ws, dashboard summary) | `NodeStatus` (strategies, risk utilisation, account KPIs; every 5 s + on change) |
 
 Schemas live in `packages/contracts` (Pydantic models). TypeScript types are generated from them.
 Every payload carries `schema_version`, `ts` (UTC ns), `node_id`.
 
 ## 4. Commands (`commands.node`)
 
-`start_strategy`, `stop_strategy`, `update_params`, `update_risk_limits`, `flatten_all`, `kill_switch`.
+`start_strategy`, `stop_strategy`, `update_params`, `update_risk_limits`, `cancel_order`, `close_position`,
+`flatten_all`, `kill_switch`.
 Every command has `command_id`, `issued_by`, and `reason`. The node replies on `events.risk` or `events.health`
 with `command_id` (ack/reject). The API writes every command to the `audit_log` table.
 
 ## 5. API surface (prefix `/api/v1`)
 
 `/auth/*`, `/positions`, `/orders`, `/trades`, `/account`, `/strategies`, `/strategies/{id}/commands`,
-`/risk/limits`, `/backtests` (POST to enqueue, GET to list/detail), `/brokers`, `/alerts`, `/health`.
-WebSocket: `/ws/live` (multiplexed: orders, fills, positions, account, risk, health).
+`/risk/limits`, `/backtests` (POST to enqueue, GET to list/detail), `/brokers`, `/alerts`, `/health`,
+`/market/bars`, `/dashboard/summary`.
+WebSocket: `/ws/live` (multiplexed: orders, fills, positions, account, risk, health, `status`, `bars:<instrument>:<tf>`,
+`quotes:<instrument>`).
 The OpenAPI spec at `/openapi.json` is the source for the generated UI client.
 
 ## 6. Ports & names (local)
@@ -78,3 +84,9 @@ The OpenAPI spec at `/openapi.json` is the source for the generated UI client.
 | postgres | `postgres` | 5432 | port-forward only |
 | redis | `redis` | 6379 | port-forward only |
 | seaweedfs (S3) | `seaweedfs` | 8333 (S3), 9333 (master), 8888 (filer) | port-forward only |
+
+## 7. UI design
+
+Approved design (Live terminal + Backtests): https://claude.ai/artifact/SJyoZGTauvpzwZqU7PDFyf
+Light ivory theme (#FAF9F5) with Claude clay accent (#D97757); gains blue #2F6F9F, losses rust #A9502F, always with +/− sign.
+Fonts: Source Serif 4 (headings), Inter (UI), JetBrains Mono (numbers). Implemented as theme + components in M9.9.
