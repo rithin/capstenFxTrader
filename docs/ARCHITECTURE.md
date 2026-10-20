@@ -17,7 +17,7 @@ sections 3–5 needs the other developer's review (see `/contract-change`).
          services/trading-node            services/recorder     (Nautilus BacktestNode)
          (Nautilus TradingNode:            (streams → Postgres)         │
           strategies, trade mgr,                                        ▼
-          risk mgr, controller)                                MinIO (tearsheets, reports)
+          risk mgr, controller)                                SeaweedFS S3 (tearsheets)
                    │
                    ▼
             Broker adapters (IB paper first; OANDA / crypto later)
@@ -36,7 +36,7 @@ Rules:
 | Python | 3.12, `uv` for deps, `ruff` lint/format, `pytest` |
 | API | FastAPI, Pydantic v2, SQLAlchemy 2 + Alembic, `redis-py` asyncio |
 | UI | Next.js (App Router) + TypeScript, Tailwind + shadcn/ui, TanStack Query, client generated from OpenAPI with `openapi-typescript` |
-| Data stores | Postgres 16, Redis 7, MinIO (S3-compatible) |
+| Data stores | Postgres 16, Redis 7, SeaweedFS (S3-compatible; MinIO stopped publishing images) |
 | Runtime | k3s. Local = k3d (k3s in Docker Desktop). Server = native k3s. Manifests = kustomize (`deploy/k8s/base` + `overlays/local`, `overlays/server`). Ingress = Traefik (bundled with k3s) |
 
 ## 3. Redis streams (event bus contract)
@@ -77,4 +77,4 @@ The OpenAPI spec at `/openapi.json` is the source for the generated UI client.
 | api | `api` | 8000 | http://capsten.localhost/api |
 | postgres | `postgres` | 5432 | port-forward only |
 | redis | `redis` | 6379 | port-forward only |
-| minio | `minio` | 9000/9001 | http://minio.capsten.localhost |
+| seaweedfs (S3) | `seaweedfs` | 8333 (S3), 9333 (master), 8888 (filer) | port-forward only |

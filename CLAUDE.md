@@ -38,6 +38,8 @@ Automated FX/crypto trading platform on NautilusTrader. Two developers, module o
 - Live trading code changes need tests. Risk-manager changes need a test that proves the limit triggers.
 - Default every new config to paper/sandbox. Never default to a live account.
 - Never remove or bypass the kill switch, risk checks or `RiskEngine` limits to "make something work".
+- **kubectl: always `--context k3d-capsten`** (or use the Makefile). Developers' default contexts may point at
+  production clusters. Never run bare `kubectl`, `kubectl config use-context`, or `apply` without an explicit context.
 
 ## Commands
 - `make install` (fresh local k3d stack) · `make up` / `make down` · `make test` · `make lint` · `make logs s=<svc>`

@@ -1,0 +1,13 @@
+# Larger requests/limits on the server.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trading-node
+spec:
+  template:
+    spec:
+      containers:
+        - name: trading-node
+          resources:
+            requests: {cpu: 500m, memory: 1Gi}
+            limits: {memory: 2Gi}

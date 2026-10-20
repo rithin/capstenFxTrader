@@ -74,7 +74,7 @@ Do this first and together. Everything else depends on it.
 | ID | Task | Depends | Status |
 |---|---|---|---|
 | M6.1 | Consume `jobs.backtest`, run `BacktestNode` with the strategy and config from the job | M2.3, M5.1 | [ ] |
-| M6.2 | Produce tearsheet HTML + reports → MinIO; publish `events.backtest` status/progress | M6.1 | [ ] |
+| M6.2 | Produce tearsheet HTML + reports → S3 (SeaweedFS); publish `events.backtest` status/progress | M6.1 | [ ] |
 | M6.3 | Summary metrics (PnL, Sharpe, max DD, win rate, trades) in the result payload for UI comparison | M6.2 | [ ] |
 
 ---
@@ -121,7 +121,7 @@ Do this first and together. Everything else depends on it.
 | ID | Task | Depends | Status |
 |---|---|---|---|
 | M11.1 | `make install`: prerequisite check (Docker Desktop, k3d, kubectl), create k3d cluster + local registry, build & push images, apply `overlays/local`, wait for ready, print URLs | M0.5 | [ ] |
-| M11.2 | Kustomize `base`: Deployments/StatefulSets/Services/Ingress for web, api, recorder, backtest-worker, trading-node, postgres, redis, minio | M11.1 | [ ] |
+| M11.2 | Kustomize `base`: Deployments/StatefulSets/Services/Ingress for web, api, recorder, backtest-worker, trading-node, postgres, redis, seaweedfs | M11.1 | [ ] |
 | M11.3 | `overlays/local`: small resources, dev secrets generated from `.env`, seed jobs | M11.2 | [ ] |
 | M11.4 | `overlays/server`: native k3s, resource limits, PVC storage class, TLS ingress, secrets via SOPS or sealed-secrets | M11.2 | [ ] |
 | M11.5 | `make deploy-server` (kubeconfig context switch + apply) and backup CronJob for Postgres | M11.4 | [ ] |

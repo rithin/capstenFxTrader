@@ -1,0 +1,23 @@
+[project]
+name = "capsten-trading-node"
+version = "0.1.0"
+description = "Capsten trading-node. Stub for M11; real implementation in M1 (trading node)."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "redis==8.1.0",
+    "nautilus_trader==1.231.0",
+]
+
+[dependency-groups]
+dev = ["pytest", "ruff"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

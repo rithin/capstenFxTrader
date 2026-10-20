@@ -1,0 +1,17 @@
+# Traefik (bundled with k3s). Host is patched per overlay.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: capsten
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: capsten.localhost
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend: {service: {name: api, port: {name: http}}}
+          - path: /
+            pathType: Prefix
+            backend: {service: {name: web, port: {name: http}}}

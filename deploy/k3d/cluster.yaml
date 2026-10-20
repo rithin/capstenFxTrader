@@ -1,0 +1,30 @@
+# Local k3s cluster (k3s in Docker Desktop via k3d). Created by `make cluster` / `make install`.
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: capsten
+servers: 1
+agents: 0
+image: rancher/k3s:v1.31.5-k3s1
+ports:
+  - port: 80:80          # Traefik ingress -> http://capsten.localhost
+    nodeFilters: [loadbalancer]
+registries:
+  use:
+    - k3d-capsten-registry:5111
+  config: |
+    mirrors:
+      "localhost:5111":
+        endpoint:
+          - http://k3d-capsten-registry:5000
+options:
+  k3s:
+    extraArgs:
+      - arg: --disable=metrics-server
+        nodeFilters: [server:*]
+      # Dev laptops run with fuller disks than servers: evict only when < 1 GiB is left (default is ~10%).
+      - arg: --kubelet-arg=eviction-hard=imagefs.available<1Gi,nodefs.available<1Gi
+        nodeFilters: [server:*]
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: false   # never change the developer's current kubectl context

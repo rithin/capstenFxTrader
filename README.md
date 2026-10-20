@@ -14,9 +14,8 @@ cp .env.example .env      # fill in values (paper/sandbox by default)
 make install              # creates the k3d cluster, builds images, deploys everything
 ```
 
-Then open http://capsten.localhost.
-
-> `make install` is being built in task M11.1. See `docs/team/TASKS.md`.
+Then open http://capsten.localhost. Run `make help` for all commands. Details, URLs and troubleshooting are in
+[deploy/README.md](deploy/README.md).
 
 ## Docs
 - Architecture & contracts: `docs/ARCHITECTURE.md`

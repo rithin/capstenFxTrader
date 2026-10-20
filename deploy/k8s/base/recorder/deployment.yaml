@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recorder
+  labels: {app.kubernetes.io/name: recorder}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app.kubernetes.io/name: recorder}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: recorder}
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: recorder
+          image: capsten/recorder
+          ports: [{name: health, containerPort: 8080}]
+          envFrom:
+            - configMapRef: {name: capsten-config}
+            - secretRef: {name: capsten-secrets}
+          env:
+            - {name: SERVICE_NAME, value: recorder}
+          readinessProbe:
+            httpGet: {path: /healthz, port: health}
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /healthz, port: health}
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {memory: 256Mi}
+          securityContext: {runAsNonRoot: true, allowPrivilegeEscalation: false}

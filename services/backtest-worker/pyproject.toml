@@ -1,0 +1,23 @@
+[project]
+name = "capsten-backtest-worker"
+version = "0.1.0"
+description = "Capsten backtest-worker. Stub for M11; real implementation in M6 (backtest worker)."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "redis==8.1.0",
+    "nautilus_trader==1.231.0",
+]
+
+[dependency-groups]
+dev = ["pytest", "ruff"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

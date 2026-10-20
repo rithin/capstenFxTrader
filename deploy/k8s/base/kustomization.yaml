@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Shared file: change via small PRs only.
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: capsten
+    includeSelectors: false
+resources:
+  - config.yaml
+  - postgres
+  - redis
+  - seaweedfs
+  - api
+  - web
+  - trading-node
+  - recorder
+  - backtest-worker
+  - ingress.yaml
