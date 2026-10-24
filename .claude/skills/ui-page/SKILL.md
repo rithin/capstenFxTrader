@@ -19,7 +19,9 @@ description: Use when adding or changing pages, components, hooks, or styling in
 - Dangerous actions (stop strategy, change risk limits, flatten, kill switch) always use a confirm dialog with a typed reason.
   The kill switch is visible in the top bar on every page.
 - Every state is handled: loading skeleton, empty state, error with retry, disconnected-WebSocket banner.
-- Use the `frontend-design` plugin's guidance for look and feel. Dark mode is on by default.
+- Look and feel = the approved design (`docs/ARCHITECTURE.md` §7): light ivory theme, clay accent, blue/rust for
+  gains/losses with +/− signs, full-width fluid layout. Build from the M9.9 components (`src/components/ui`,
+  `src/components/shell`); never hard-code colours, use the theme tokens. No dark theme unless asked.
 
 ## Checks
 `make lint m=web` (eslint + tsc) and `make test m=web` (vitest). Playwright smoke tests live in `apps/web/e2e/` (M9.8).
