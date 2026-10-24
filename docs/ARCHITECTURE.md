@@ -32,8 +32,9 @@ Rules:
 
 | Layer | Choice |
 |---|---|
-| Trading engine | `nautilus_trader` pip package (pinned in `services/*/pyproject.toml`); source in `vendor/nautilus_trader` is read-only reference |
-| Python | 3.12, `uv` for deps, `ruff` lint/format, `pytest` |
+| Trading engine | **NautilusTrader v2** (LGPL-3.0) pip package, pinned in `services/*/pyproject.toml` (M0.7); source in `vendor/nautilus_trader` is read-only reference |
+| Broker adapters | Out-of-tree packages on the v2 Python adapter interface: `packages/adapters/kite` (Zerodha), `packages/adapters/coindcx`; Hyperliquid uses the built-in Nautilus adapter |
+| Python | **3.13** (v2 has no 3.12 wheels), `uv` for deps, `ruff` lint/format, `pytest` |
 | API | FastAPI, Pydantic v2, SQLAlchemy 2 + Alembic, `redis-py` asyncio |
 | UI | Next.js (App Router) + TypeScript, Tailwind + shadcn/ui, TanStack Query, client generated from OpenAPI with `openapi-typescript` |
 | Data stores | Postgres 16, Redis 7, SeaweedFS (S3-compatible; MinIO stopped publishing images) |
@@ -90,3 +91,16 @@ The OpenAPI spec at `/openapi.json` is the source for the generated UI client.
 Approved design (Live terminal + Backtests): https://claude.ai/artifact/SJyoZGTauvpzwZqU7PDFyf
 Light ivory theme (#FAF9F5) with Claude clay accent (#D97757); gains blue #2F6F9F, losses rust #A9502F, always with +/− sign.
 Fonts: Source Serif 4 (headings), Inter (UI), JetBrains Mono (numbers). Implemented as theme + components in M9.9.
+
+## 8. Markets & brokers (India-first, decided 2026-10-24)
+
+| Priority | Market | Broker | Mode | Notes |
+|---|---|---|---|---|
+| 1 | Index options buying: NIFTY (NSE, weekly), SENSEX (BSE, weekly), BANKNIFTY (NSE, monthly only) | Zerodha (Kite Connect, ₹500/month) | paper → live | Daily manual 2FA login; orders only from the whitelisted static-IP server; ≤ 10 orders/sec; MARKET orders become price-protected, so use LIMIT/SL |
+| 2 | Crypto spot + futures (INR/USDT margined) | CoinDCX | paper → live | HMAC REST + Socket.io 2.x streams; 30% tax + 1% TDS |
+| 3 | Forex (HIP-3 perpetuals) | Hyperliquid | backtest only | Live use needs legal review first |
+
+- **Paper mode** = live broker data + Nautilus sandbox execution (simulated fills). Neither Zerodha nor CoinDCX offers a sandbox.
+- **Options history:** team-provided NIFTY/SENSEX dataset (ATM, ITM, ITM1–3) for backtests + our own tick recording from day one
+  (Kite does not serve expired options).
+- **Interactive Brokers and FX via IB are dropped.**

@@ -23,9 +23,11 @@ Do this first and together. Everything else depends on it.
 | M0.4 | Fake event publisher (`scripts/fake_events.py`) that emits realistic contract events to Redis, so B can build the UI/recorder before the real node exists | A | [ ] |
 | M0.5 | Root `Makefile` stub with target names agreed (`install`, `up`, `down`, `build`, `test`, `lint`, `logs`, `reset`) | B | [ ] |
 | M0.6 | Install the Claude Code plugins from `docs/team/CLAUDE_CODE_SETUP.md` on both machines | A+B | [ ] |
+| M0.7 | Upgrade services to **Nautilus v2 + Python 3.13** (before any adapter work) | A | [ ] |
 
-**Open decisions for M0.1:** broker for v1 (proposed: IB paper), first strategy + pairs, auth model for UI
-(proposed: single admin + JWT, roles later), alert channel (Telegram or Slack).
+**Decided 2026-10-24:** Zerodha (index options) first, CoinDCX (crypto) second, Hyperliquid (FX) backtest only; IB dropped;
+Nautilus v2; first strategy = Nifty weekly options buying; static-IP server for live (see ARCHITECTURE.md §8).
+**Still open for M0.1:** auth model for UI (proposed: single admin + JWT), alert channel (Telegram or Slack).
 
 ---
 
@@ -134,15 +136,64 @@ Do this first and together. Everything else depends on it.
 
 ---
 
+## India-first broker work (added 2026-10-24)
+
+Interactive Brokers (M1.2) is **closed**: replaced by M12/M13. Additions to existing stories: **M5.3** import the
+provided NIFTY/SENSEX options dataset · **M5.4** record live option ticks from day one · **M6.4** Indian F&O charges +
+crypto fees/TDS · **M9.11** Connect Zerodha daily login + ₹/options formatting (Dev B).
+
+### M12 · Zerodha Kite adapter (`packages/adapters/kite`), Dev A
+| ID | Task | Depends | Status |
+|---|---|---|---|
+| M12.1 | Kite session & daily login (manual 2FA, token storage, expiry alerts) | M0.7 | [ ] |
+| M12.2 | Instrument provider: NIFTY/SENSEX weekly, BANKNIFTY monthly options + index spot | M12.1 | [ ] |
+| M12.3 | Market data client: WebSocket ticks, bars, option chain | M12.2 | [ ] |
+| M12.4 | Historical data client (warm-up/research; no expired options) | M12.2 | [ ] |
+| M12.5 | Execution client: LIMIT/SL, ≤ 10 orders/sec, order updates | M12.3 | [ ] |
+| M12.6 | Reconciliation & restart | M12.5 | [ ] |
+| M12.7 | Paper mode: Kite data + Nautilus sandbox execution | M12.3, M1.6 | [ ] |
+| M12.8 | Conformance tests (recorded responses) & adapter docs | M12.3 | [ ] |
+
+### M13 · CoinDCX adapter (`packages/adapters/coindcx`), Dev B
+| ID | Task | Depends | Status |
+|---|---|---|---|
+| M13.1 | REST client, HMAC auth & rate limits | M0.7 | [ ] |
+| M13.2 | Instrument provider: spot & futures (INR/USDT margined) | M13.1 | [ ] |
+| M13.3 | Market data client (Socket.io 2.x) | M13.2 | [ ] |
+| M13.4 | Execution: spot | M13.3 | [ ] |
+| M13.5 | Execution: futures | M13.4 | [ ] |
+| M13.6 | Reconciliation & paper mode | M13.5, M1.6 | [ ] |
+| M13.7 | Conformance tests & adapter docs | M13.3 | [ ] |
+
+### M14 · Hyperliquid FX backtesting, Dev A (last priority)
+| ID | Task | Depends | Status |
+|---|---|---|---|
+| M14.1 | Confirm HIP-3 FX markets & Nautilus adapter support | M0.7 | [ ] |
+| M14.2 | FX history loader (candles + funding) | M14.1, M5.1 | [ ] |
+| M14.3 | FX backtest configuration | M14.2, M6.1 | [ ] |
+
+### M15 · Compliance & go-live, both
+| ID | Task | Depends | Status |
+|---|---|---|---|
+| M15.1 | Kite Connect app & API access | none | [ ] |
+| M15.2 | Static IP registration & SEBI algo requirements (confirm with Zerodha) | M15.1 | [ ] |
+| M15.3 | Go-live checklist & daily runbook | M12.6, M4.4 | [ ] |
+| M15.4 | Crypto tax (30%) & 1% TDS handling | M13.4 | [ ] |
+| M15.5 | Legal review: Hyperliquid FX from India | none | [ ] |
+
+---
+
 ## Sync points (both)
 
 | When | What |
 |---|---|
 | End of Phase 0 | Contracts frozen v1; fake events flowing; `make install` brings up empty stack |
-| Milestone 1 | Real node on IB paper → events in UI live dashboard (M1.3 + M9.2) |
+| Milestone 1 | Kite paper trading (live data + simulated fills) → events in UI live dashboard (M12 + M1.3 + M9.2) |
 | Milestone 2 | Backtest from UI end to end (M6 + M7.6 + M9.4) |
 | Milestone 3 | Risk limits + kill switch from UI verified on paper (M4 + M9.7) |
-| Milestone 4 | Server deploy on k3s, 2 weeks of unattended paper trading |
+| Milestone 4 | Static-IP server on k3s, 2 weeks unattended paper, go-live checklist → Zerodha live, small capital (M15) |
+| Milestone 5 | CoinDCX paper → live (M13) |
+| Milestone 6 | Hyperliquid FX backtests (M14), last priority |
 
 ## Why this split runs in parallel
 - B never waits for A: the **fake event publisher (M0.4)** and **contracts (M0.3)** let the UI, API and recorder be built
