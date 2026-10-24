@@ -2,7 +2,7 @@
 name = "capsten-recorder"
 version = "0.1.0"
 description = "Capsten recorder. Stub for M11; real implementation in M8.2 (recorder)."
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.13,<3.15"
 dependencies = [
     "redis==8.1.0",
 ]
@@ -12,7 +12,7 @@ dev = ["pytest", "ruff"]
 
 [tool.ruff]
 line-length = 110
-target-version = "py312"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B"]
