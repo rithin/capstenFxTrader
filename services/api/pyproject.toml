@@ -2,7 +2,7 @@
 name = "capsten-api"
 version = "0.1.0"
 description = "Capsten API gateway (FastAPI). Stub for M11; real endpoints in M7."
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.13,<3.15"
 dependencies = [
     "fastapi==0.151.0",
     "uvicorn[standard]==0.54.0",
@@ -18,7 +18,7 @@ dev = ["pytest", "httpx", "ruff"]
 
 [tool.ruff]
 line-length = 110
-target-version = "py312"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B"]
