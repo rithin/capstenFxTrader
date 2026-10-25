@@ -1,6 +1,6 @@
 ---
 name: nautilus-strategy
-description: Use when writing or changing trading strategies, the trade manager, the risk manager, the event bridge actor, the trading node, or backtests in services/trading-node or services/backtest-worker (NautilusTrader code).
+description: Use when writing or changing trading strategies, the trade manager, the risk manager, the event bridge actor, the trading node, broker adapters (packages/adapters/kite, packages/adapters/coindcx), or backtests in services/trading-node or services/backtest-worker (NautilusTrader v2 code).
 ---
 
 # Writing Nautilus code in this repo
@@ -29,3 +29,14 @@ description: Use when writing or changing trading strategies, the trade manager,
 - Unit tests: pure logic (sizing, signal calculation) with no engine.
 - Behaviour tests: a `BacktestEngine` with a few hundred bars from fixtures; assert on orders and positions from the engine's reports.
 - Every risk rule needs a test that proves it **blocks** or **halts**.
+
+## Markets & adapters (see `docs/ARCHITECTURE.md` §8)
+- Nautilus **v2**, Python 3.13. Adapters subclass `DataClient` / `ExecutionClient` from `nautilus_trader.live.clients`
+  and register factories; follow `vendor/nautilus_trader/docs/developer_guide/python_adapters.md` and the template in
+  `vendor/nautilus_trader/examples/live/_template/`. Never edit `vendor/`.
+- Index options: lots (never fractional), tick 0.05, INR, expiries (NIFTY/SENSEX weekly, BANKNIFTY monthly), IST session
+  09:15–15:30 with exchange holidays; square off before close/expiry. Use LIMIT/SL orders; MARKET becomes price-protected.
+- Options buying risk = premium paid: size by premium at risk, round DOWN to lot size.
+- Zerodha: ≤ 10 orders/sec (including modifications); the daily login is manual. Never automate it.
+- Paper mode = live data + Nautilus sandbox execution; a paper config must never instantiate a live execution client.
+- Recorded broker responses in `tests/fixtures/` (no network in tests).

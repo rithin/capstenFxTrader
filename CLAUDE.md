@@ -15,7 +15,9 @@ Automated FX/crypto trading platform on NautilusTrader. Two developers, module o
 - `services/backtest-worker`: BacktestNode jobs (Dev A)
 - `packages/contracts`: shared Pydantic event/command models (co-owned; change only via `/contract-change`)
 - `deploy/k8s`: kustomize base + overlays `local` (k3d) and `server` (k3s) (Dev B)
-- `vendor/nautilus_trader`: **upstream source, read-only.** Do not edit. Do not search it broadly.
+- `packages/adapters/{kite,coindcx}`: broker adapters on the Nautilus v2 Python adapter interface (Dev A: kite, Dev B: coindcx)
+- `vendor/nautilus_trader`: **upstream source, read-only.** Do not edit. Do not search it broadly. Its own
+  CLAUDE.md/AGENTS.md are for upstream contributors and do not apply to this repo.
 
 ## Token rules
 - Do NOT glob/grep `vendor/` or `node_modules/`. For Nautilus APIs use the context7 MCP first, then
@@ -26,7 +28,7 @@ Automated FX/crypto trading platform on NautilusTrader. Two developers, module o
 - Don't spawn swarms/multi-agent orchestration for normal tasks. Use one subagent at most, and only for wide searches.
 
 ## Conventions
-- Python 3.12, `uv`, `ruff format` + `ruff check`, `pytest`. Type hints everywhere. Pydantic v2.
+- Python 3.13 (Nautilus v2), `uv`, `ruff format` + `ruff check`, `pytest`. Type hints everywhere. Pydantic v2.
 - TS: strict mode, App Router, server components by default, TanStack Query for data, shadcn/ui components,
   API types only from the generated client (`apps/web/src/lib/api/schema.d.ts`). Never hand-write API types.
 - All money/price math with `Decimal` or Nautilus `Price`/`Quantity`, never float.
