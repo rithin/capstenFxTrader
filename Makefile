@@ -134,9 +134,10 @@ render-server: ## Render + schema-validate the server overlay using the LOCAL cl
 
 ##@ Develop
 .PHONY: test
-test: ## Run tests: make test m=<api|web|trading-node|recorder|backtest-worker|fake-events> (all if empty)
+test: ## Run tests: make test m=<api|web|web-e2e|trading-node|recorder|backtest-worker|fake-events> (all but web-e2e if empty)
 	@set -e; for mod in $(if $(m),$(m),$(PY_MODULES) web); do echo "==> $$mod"; \
-	  if [ "$$mod" = "web" ]; then (cd apps/web && { [ -d node_modules ] || npm ci --silent; } && npm run --silent lint); \
+	  if [ "$$mod" = "web" ]; then (cd apps/web && { [ -d node_modules ] || npm ci --silent; } && npm run --silent lint && npm test --silent); \
+	  elif [ "$$mod" = "web-e2e" ]; then (cd apps/web && { [ -d node_modules ] || npm ci --silent; } && npx playwright install chromium >/dev/null && npm run --silent test:e2e); \
 	  elif echo " $(DOCKER_TEST_MODULES) " | grep -q " $$mod "; then docker build -q --target test services/$$mod >/dev/null && echo "tests + lint passed (in Docker)"; \
 	  elif [ -d services/$$mod ]; then (cd services/$$mod && uv run --quiet --group dev pytest -q); \
 	  else echo "unknown module: $$mod"; exit 1; fi; done

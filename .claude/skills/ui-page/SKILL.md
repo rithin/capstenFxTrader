@@ -7,7 +7,12 @@ description: Use when adding or changing pages, components, hooks, or styling in
 
 ## Layout
 - `src/app/(dashboard)/<area>/page.tsx` (areas: `live`, `trades`, `backtests`, `strategies`, `risk`, `brokers`, `alerts`).
-- `src/components/ui/`: shadcn/ui primitives (add them with `npx shadcn@latest add <component>`, never hand-copy).
+- `src/components/ui/`: shadcn/ui primitives (base-nova style on Base UI: use `render={<El/>}`, not `asChild`; add them with
+  `npx shadcn@latest add <component>`, never hand-copy).
+- `src/components/shell/`: AppShell, NavTabs, ModeBadge, ConnectionStatus, KillSwitchButton, FooterItem.
+- `src/components/data/`: Panel, KpiCard/KpiRow, Meter/LimitMeter, DataTable, StatusPill/SidePill/StatusDot, PnlText,
+  EmptyState/TableSkeleton, ConfirmDialog, Workspace (content + right rail). See them all at `/dev/components`.
+- `src/lib/theme.ts` + `src/app/globals.css`: colour tokens (kept in sync by tests). `src/lib/format.ts`: money/P&L formatting.
 - `src/components/<area>/`: feature components. `src/lib/api/`: generated `schema.d.ts` + a typed fetch client.
 - `src/lib/ws/useLiveStream.ts`: the single WebSocket hook. Components subscribe by channel. Don't open new sockets.
 
@@ -24,4 +29,5 @@ description: Use when adding or changing pages, components, hooks, or styling in
   `src/components/shell`); never hard-code colours, use the theme tokens. No dark theme unless asked.
 
 ## Checks
-`make lint m=web` (eslint + tsc) and `make test m=web` (vitest). Playwright smoke tests live in `apps/web/e2e/` (M9.8).
+`make test m=web` (tsc + vitest) and `make test m=web-e2e` (build + Playwright in `apps/web/e2e/`). A new component
+goes on `/dev/components`; a new colour goes in both theme.ts and globals.css (the contrast test must pass).
