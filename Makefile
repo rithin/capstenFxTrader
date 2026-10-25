@@ -27,7 +27,7 @@ m ?=
 
 ##@ Setup
 .PHONY: install
-install: prereqs secrets cluster build deploy wait urls ## Fresh local stack: cluster + images + deploy (idempotent)
+install: prereqs secrets cluster build deploy rollout wait urls ## Fresh local stack: cluster + images + deploy (idempotent)
 
 .PHONY: prereqs
 prereqs: ## Check Docker Desktop, k3d, kubectl, free ports
@@ -67,6 +67,11 @@ deploy: ## Apply the local overlay (re-runs migration + bucket jobs)
 	@$(K) delete job db-migrate s3-init --ignore-not-found >/dev/null 2>&1 || true
 	@$(KUBECTL) apply -k $(LOCAL_OVERLAY) | grep -v unchanged || true
 	@if [ -n "$(s)" ]; then $(K) rollout restart deployment/$(s); fi
+
+.PHONY: rollout
+rollout: ## Restart app pods so they pick up rebuilt :dev images (all, or s=<service>)
+	@$(K) rollout restart deployment $(if $(s),$(s),-l app.kubernetes.io/part-of=capsten) >/dev/null && echo "Restarted app deployments"
+	@$(MAKE) --no-print-directory clean-images
 
 .PHONY: wait
 wait: ## Wait until infrastructure, jobs and app services are ready
