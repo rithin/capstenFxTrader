@@ -1,52 +1,67 @@
-// Stub page (M11): shows the heartbeat of every service via the API. The real dashboard arrives in M9.
+// Live page placeholder: shows each service's heartbeat in the new shell. The real Live terminal arrives in M9.2.
+import Link from "next/link";
+
+import { type Column, DataTable } from "@/components/data/data-table";
+import { EmptyState } from "@/components/data/empty-state";
+import { Panel } from "@/components/data/panel";
+import { StatusDot } from "@/components/data/pills";
+import { AppShell } from "@/components/shell/app-shell";
+import { FooterItem } from "@/components/shell/status-bits";
+
 export const dynamic = "force-dynamic";
 
 type ServiceStatus = { service: string; alive: boolean; age_seconds: number; mode?: string; nautilus_version?: string };
 
-async function getStatus(): Promise<{ services: Record<string, ServiceStatus> } | null> {
+async function getStatus(): Promise<ServiceStatus[] | null> {
   try {
-    const res = await fetch(`${process.env.API_INTERNAL_URL ?? "http://localhost:8000"}/api/v1/status`, {
-      cache: "no-store",
-    });
-    return res.ok ? await res.json() : null;
+    const res = await fetch(`${process.env.API_INTERNAL_URL ?? "http://localhost:8000"}/api/v1/status`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { services: Record<string, ServiceStatus> };
+    return Object.values(body.services);
   } catch {
     return null;
   }
 }
 
+const columns: Column<ServiceStatus>[] = [
+  { key: "service", header: "Service", cell: (s) => <span className="font-semibold">{s.service}</span> },
+  { key: "state", header: "Status", cell: (s) => <StatusDot state={s.alive ? "ok" : "down"}>{s.alive ? "Alive" : "Stale"}</StatusDot> },
+  { key: "age", header: "Last heartbeat", align: "right", numeric: true, cell: (s) => `${s.age_seconds}s ago` },
+  { key: "mode", header: "Mode", cell: (s) => <span className="text-ink-muted">{s.mode || "—"}</span> },
+  { key: "nautilus", header: "Nautilus", numeric: true, cell: (s) => s.nautilus_version ?? "—" },
+];
+
 export default async function Home() {
-  const status = await getStatus();
-  const services = status ? Object.values(status.services) : [];
+  const services = await getStatus();
   return (
-    <main style={{ maxWidth: 760, margin: "64px auto", padding: "0 16px" }}>
-      <h1 style={{ marginBottom: 4 }}>Capsten FX Trader</h1>
-      <p style={{ color: "#9aa8ba", marginTop: 0 }}>Local stack status (stub UI, replaced in M9)</p>
-      {!status && <p style={{ color: "#f0a04b" }}>API unreachable.</p>}
-      {status && services.length === 0 && <p>No heartbeats yet. Services are starting.</p>}
-      <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 24 }}>
-        <thead>
-          <tr style={{ textAlign: "left", color: "#9aa8ba" }}>
-            <th style={{ padding: 8 }}>Service</th>
-            <th style={{ padding: 8 }}>Status</th>
-            <th style={{ padding: 8 }}>Last heartbeat</th>
-            <th style={{ padding: 8 }}>Info</th>
-          </tr>
-        </thead>
-        <tbody>
-          {services.map((s) => (
-            <tr key={s.service} style={{ borderTop: "1px solid #24364b" }}>
-              <td style={{ padding: 8 }}>{s.service}</td>
-              <td style={{ padding: 8, color: s.alive ? "#5fd08a" : "#f07b5f" }}>{s.alive ? "alive" : "stale"}</td>
-              <td style={{ padding: 8 }}>{s.age_seconds}s ago</td>
-              <td style={{ padding: 8, color: "#9aa8ba" }}>
-                {[s.mode && `mode: ${s.mode}`, s.nautilus_version && `nautilus ${s.nautilus_version}`]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </main>
+    <AppShell
+      mode="sandbox"
+      connections={[{ broker: "Zerodha", state: "login-required" }]}
+      footer={
+        <>
+          <FooterItem label="Services">{services ? `${services.filter((s) => s.alive).length}/${services.length} alive` : "—"}</FooterItem>
+          <span className="ms-auto">Stub page · the Live terminal arrives in M9.2</span>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-1">
+        <h1 className="font-heading text-[28px] font-semibold">System status</h1>
+        <p className="text-sm text-ink-muted">
+          Heartbeats from every service. See the <Link href="/dev/components" className="text-loss-strong underline">component preview</Link>.
+        </p>
+      </div>
+      <Panel title="Services" count={services?.length} flush>
+        {services === null ? (
+          <EmptyState title="API unreachable" hint="The API isn't responding. Check `make status`." />
+        ) : (
+          <DataTable
+            columns={columns}
+            rows={services}
+            rowKey={(s) => s.service}
+            empty={<EmptyState title="No heartbeats yet" hint="Services are starting." />}
+          />
+        )}
+      </Panel>
+    </AppShell>
   );
 }

@@ -1,0 +1,114 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Capsten theme: light ivory only (no dark theme). Values mirror src/lib/theme.ts. */
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-source-serif), Georgia, serif;
+  --font-serif: var(--font-source-serif), Georgia, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  /* shadcn semantic colours, mapped to our tokens */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Capsten tokens */
+  --color-ivory: var(--ivory);
+  --color-panel: var(--panel);
+  --color-surface: var(--surface);
+  --color-border-soft: var(--border-soft);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-muted: var(--ink-muted);
+  --color-clay: var(--clay);
+  --color-clay-strong: var(--clay-strong);
+  --color-clay-bg: var(--clay-bg);
+  --color-gain: var(--gain);
+  --color-gain-strong: var(--gain-strong);
+  --color-gain-bg: var(--gain-bg);
+  --color-loss: var(--loss);
+  --color-loss-strong: var(--loss-strong);
+  --color-loss-bg: var(--loss-bg);
+  --color-neutral-dot: var(--neutral-dot);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+:root {
+  --ivory: #FAF9F5;
+  --panel: #FFFFFF;
+  --surface: #F3F1EA;
+  --border-soft: #EFECE4;
+  --ink: #141413;
+  --ink-soft: #3D3D3A;
+  --ink-muted: #5E5D59;
+  --clay: #D97757;
+  --clay-strong: #B35838;
+  --clay-bg: #F6E3D9;
+  --gain: #2F6F9F;
+  --gain-strong: #1F4E73;
+  --gain-bg: #E4EEF6;
+  --loss: #A9502F;
+  --loss-strong: #8A3F22;
+  --loss-bg: #F6E3D9;
+  --neutral-dot: #8E8B82;
+
+  --background: var(--ivory);
+  --foreground: var(--ink);
+  --card: var(--panel);
+  --card-foreground: var(--ink);
+  --popover: var(--panel);
+  --popover-foreground: var(--ink);
+  --primary: var(--clay-strong);
+  --primary-foreground: var(--panel);
+  --secondary: var(--surface);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface);
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--surface);
+  --accent-foreground: var(--ink);
+  --destructive: var(--loss);
+  --border: #E6E2D8;
+  --input: #E6E2D8;
+  --ring: var(--clay);
+  --radius: 0.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  /* Prices, sizes and P&L line up in columns */
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+}
